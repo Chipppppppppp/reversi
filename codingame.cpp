@@ -2,15 +2,12 @@
 #pragma GCC optimize("unroll-loops")
 #pragma GCC optimize("O3")
 
-#include <array>
 #include <cstdint>
 #include <iostream>
-#include <limits>
 #include <sstream>
 #include <string>
 #include <utility>
 #include <unordered_map>
-#include <vector>
 #include "state.hpp"
 
 State state;

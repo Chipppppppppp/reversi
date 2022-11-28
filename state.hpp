@@ -7,7 +7,6 @@
 #include <limits>
 #include <string>
 #include <utility>
-#include <vector>
 
 // 無限大
 inline constexpr int inf = std::numeric_limits<int>::max() / 3;
