@@ -11,115 +11,115 @@
 // 無限大
 inline constexpr int inf = std::numeric_limits<int>::max() / 3;
 
+// ターンのクラス
+struct Turn {
+    // falseの時黒
+    bool color;
+
+    Turn() noexcept = default;
+    Turn(bool color) noexcept: color(color) {}
+
+    // boolに変換
+    explicit operator bool() const noexcept {
+        return color;
+    }
+
+    // デバッグ用
+    std::string str() const {
+        return color ? "white" : "black";
+    }
+
+    // 黒か
+    bool is_black() const noexcept {
+        return !color;
+    }
+
+    // 白か
+    bool is_white() const noexcept {
+        return color;
+    }
+
+    // 比較
+    bool operator ==(const Turn& stone) const noexcept {
+        return color == stone.color;
+    }
+    bool operator !=(const Turn& stone) const noexcept {
+        return color != stone.color;
+    }
+
+    // 次のターン
+    void toggle() noexcept {
+        color = !color;
+    }
+
+    // 次のターンを返す
+    Turn next() const noexcept {
+        return Turn{!color};
+    }
+};
+
+const Turn black{false}, white{true};
+
+// 位置を表すクラス
+struct Position {
+    int x, y;
+
+    Position() noexcept = default;
+    Position(int x, int y) noexcept: x(x), y(y) {}
+    explicit Position(int t) noexcept: x(t >> 3), y(t & 7) {}
+
+    // 比較
+    bool operator ==(const Position& pos) const noexcept {
+        return x == pos.x && y == pos.y;
+    }
+    bool operator !=(const Position& pos) const noexcept {
+        return !(*this == pos);
+    }
+
+    // 範囲内か調べる
+    bool is_in_range() const noexcept {
+        return 0 <= x && x < 8 && 0 <= y && y < 8;
+    }
+
+    // bit boardアクセス用
+    int flatten() const noexcept {
+        return (x << 3) + y;
+    }
+};
+
+// 角
+inline static const std::array<Position, 4> corners{{{0, 0}, {0, 7}, {7, 0}, {7, 7}}};
+
+// 方向を表すクラス
+struct Direction {
+    int dx, dy;
+
+    Direction() noexcept = default;
+    Direction(int dx, int dy) noexcept: dx(dx), dy(dy) {}
+
+    // 比較
+    bool operator ==(const Direction& d) const noexcept {
+        return dx == d.dx && dy == d.dy;
+    }
+    bool operator !=(const Direction& d) const noexcept {
+        return !(*this == d);
+    }
+
+    // Positionの隣接移動
+    friend Position& operator +=(Position& pos, const Direction& d) noexcept {
+        pos.x += d.dx;
+        pos.y += d.dy;
+        return pos;
+    }
+    friend Position operator +(Position pos, const Direction& d) noexcept {
+        return pos += d;
+    }
+};
+
+// 8方向
+inline static const std::array<Direction, 8> around{{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}};
+
 struct State {
-    // ターンのクラス
-    struct Turn {
-        // falseの時黒
-        bool color;
-
-        Turn() noexcept = default;
-        Turn(bool color) noexcept: color(color) {}
-
-        // boolに変換
-        explicit operator bool() const noexcept {
-            return color;
-        }
-
-        // デバッグ用
-        std::string str() const {
-            return color ? "white" : "black";
-        }
-
-        // 黒か
-        bool is_black() const noexcept {
-            return !color;
-        }
-
-        // 白か
-        bool is_white() const noexcept {
-            return color;
-        }
-
-        // 比較
-        bool operator ==(const Turn& stone) const noexcept {
-            return color == stone.color;
-        }
-        bool operator !=(const Turn& stone) const noexcept {
-            return color != stone.color;
-        }
-
-        // 次のターン
-        void toggle() noexcept {
-            color = !color;
-        }
-
-        // 次のターンを返す
-        Turn next() const noexcept {
-            return Turn{!color};
-        }
-    };
-
-    inline static const Turn black{false}, white{true};
-
-    // 位置を表すクラス
-    struct Position {
-        int x, y;
-
-        Position() noexcept = default;
-        Position(int x, int y) noexcept: x(x), y(y) {}
-        explicit Position(int t) noexcept: x(t >> 3), y(t & 7) {}
-
-        // 比較
-        bool operator ==(const Position& pos) const noexcept {
-            return x == pos.x && y == pos.y;
-        }
-        bool operator !=(const Position& pos) const noexcept {
-            return !(*this == pos);
-        }
-
-        // 範囲内か調べる
-        bool is_in_range() const noexcept {
-            return 0 <= x && x < 8 && 0 <= y && y < 8;
-        }
-
-        // bit boardアクセス用
-        int flatten() const noexcept {
-            return (x << 3) + y;
-        }
-    };
-
-    // 角
-    inline static const std::array<Position, 4> corners{{{0, 0}, {0, 7}, {7, 0}, {7, 7}}};
-
-    // 方向を表すクラス
-    struct Direction {
-        int dx, dy;
-
-        Direction() noexcept = default;
-        Direction(int dx, int dy) noexcept: dx(dx), dy(dy) {}
-
-        // 比較
-        bool operator ==(const Direction& d) const noexcept {
-            return dx == d.dx && dy == d.dy;
-        }
-        bool operator !=(const Direction& d) const noexcept {
-            return !(*this == d);
-        }
-
-        // Positionの隣接移動
-        friend Position& operator +=(Position& pos, const Direction& d) noexcept {
-            pos.x += d.dx;
-            pos.y += d.dy;
-            return pos;
-        }
-        friend Position operator +(Position pos, const Direction& d) noexcept {
-            return pos += d;
-        }
-    };
-
-    // 8方向
-    inline static const std::array<Direction, 8> around{{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}};
-
     // 二つのbit boardで盤面を表す
     using Board = std::array<std::uint64_t, 2>;
 
