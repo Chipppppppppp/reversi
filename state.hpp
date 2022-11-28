@@ -17,7 +17,7 @@ struct Turn {
     bool color;
 
     Turn() noexcept = default;
-    Turn(bool color) noexcept: color(color) {}
+    constexpr Turn(bool color) noexcept: color(color) {}
 
     // boolに変換
     explicit operator bool() const noexcept {
@@ -58,15 +58,15 @@ struct Turn {
     }
 };
 
-const Turn black{false}, white{true};
+constexpr Turn black{false}, white{true};
 
 // 位置を表すクラス
 struct Position {
     int x, y;
 
     Position() noexcept = default;
-    Position(int x, int y) noexcept: x(x), y(y) {}
-    explicit Position(int t) noexcept: x(t >> 3), y(t & 7) {}
+    constexpr Position(int x, int y) noexcept: x(x), y(y) {}
+    constexpr explicit Position(int t) noexcept: x(t >> 3), y(t & 7) {}
 
     // 比較
     bool operator ==(const Position& pos) const noexcept {
@@ -88,14 +88,14 @@ struct Position {
 };
 
 // 角
-inline static const std::array<Position, 4> corners{{{0, 0}, {0, 7}, {7, 0}, {7, 7}}};
+constexpr std::array<Position, 4> corners{{{0, 0}, {0, 7}, {7, 0}, {7, 7}}};
 
 // 方向を表すクラス
 struct Direction {
     int dx, dy;
 
     Direction() noexcept = default;
-    Direction(int dx, int dy) noexcept: dx(dx), dy(dy) {}
+    constexpr Direction(int dx, int dy) noexcept: dx(dx), dy(dy) {}
 
     // 比較
     bool operator ==(const Direction& d) const noexcept {
@@ -117,7 +117,7 @@ struct Direction {
 };
 
 // 8方向
-inline static const std::array<Direction, 8> around{{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}};
+constexpr std::array<Direction, 8> around{{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}};
 
 struct State {
     // 二つのbit boardで盤面を表す
@@ -231,7 +231,7 @@ struct State {
     }
 
     // 角マスの評価値
-    inline static const std::array<std::array<int, 8>, 8> board_eval{{
+    static constexpr std::array<std::array<int, 8>, 8> board_eval{{
         {120, -40, 20, 5, 5, 20, -40, 120},
         {-40, -80, -1, -1, -1, -1, -80, -40},
         {20, -1, 5, 1, 1, 5, -1, 20},
