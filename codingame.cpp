@@ -87,7 +87,7 @@ int alpha_beta(const State& state, int depth, int a, int b, Position& pos) {
         if (a >= b) return a;
     }
     if (flag) {
-        if (state.any_putable(state.turn.next())) return -alpha_beta<time_limit, false>(state.passed(), depth - 1, -b, -a, pos);
+        if (state.any_putable(!state.turn)) return -alpha_beta<time_limit, false>(state.passed(), depth - 1, -b, -a, pos);
         else return state.eval();
     }
     return a;
@@ -157,11 +157,11 @@ int main() {
     }
     for (; ; ) {
         if (!state.any_putable(state.turn)) {
-            if (!state.any_putable(state.turn.next())) break;
+            if (!state.any_putable(!state.turn)) break;
             state.pass();
             continue;
         }
-        if ((bool)state.turn == my_turn) cpu_move();
+        if (state.turn == my_turn) cpu_move();
         else input_move();
     }
 }
